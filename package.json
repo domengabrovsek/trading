@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/domengabrovsek/trading/issues"
   },
-  "homepage": "https://github.com/domengabrovsek/trading#readme"
+  "homepage": "https://github.com/domengabrovsek/trading#readme",
+  "dependencies": {
+    "csvtoarray": "^1.1.0"
+  }
 }
