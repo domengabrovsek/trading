@@ -1,37 +1,38 @@
 'use strict';
+const { parseData, filterData, getPairs } = require('./src/helpers');
+const rawData = parseData('files/trades.csv');
+let filteredData = filterData(rawData);
+const pairs = getPairs(filteredData);
+const kraken = require('./src/kraken');
+const utils = require('./src/utils');
 
-const { parseData, getTotalFee } = require('./helpers');
-const { data, columns } = parseData('sources/trades.csv');
-// get all traded pairs
+// get current data
+kraken.getCurrentData('XLMEUR');
+const currentData =  utils.readFromFile('currentData');
 
-const filteredData = data.map(trade => {
-    return {
-        pair: trade.pair,
-        time: trade.time,
-        type: trade.type,
-        orderType: trade.ordertype,
-        price: trade.price,
-        paid: trade.cost,
-        fee: trade.fee,
-        coinsBought: trade.vol
-    };
+
+let data = {};
+
+// create new empty objects for each pair in data
+pairs.forEach(p => data[p] = []);
+
+// fill those objects with data filtered by pair
+filteredData.forEach(d => {
+    if(d.pair === 'XXLMZEUR' && d.type === 'buy'){
+        const worthToday = utils.round(d.coinsBought * currentData.bid, 5);
+        d.worthToday = worthToday;
+
+        d.PL = utils.round(worthToday - d.paid, 5);
+        data[d.pair].push(d)
+    }
 });
 
-const pairs = filteredData.map(d => d.pair);
+let total = 0;
+data.XXLMZEUR.forEach(d => {
+    total += +d.PL;
+});
 
-// overall stats
-let stats = {};
-
-pairs.forEach(pair => {
-    stats[pair] = {};
-})
-
-
-stats.totalFeePaid = getTotalFee(filteredData.map(d => d.fee));
+console.log(total);
 
 
 
-console.table(filteredData);
-
-
-console.table(stats);
