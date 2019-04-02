@@ -32,6 +32,7 @@ data.XXLMZEUR.forEach(d => {
     total += +d.PL;
 });
 
+console.table(data.XXLMZEUR);
 console.log(total);
 
 

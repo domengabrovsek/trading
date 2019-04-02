@@ -19,6 +19,7 @@
   "dependencies": {
     "csvtoarray": "^1.1.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.4",
+    "stellar-sdk": "^0.15.0"
   }
 }
