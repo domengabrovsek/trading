@@ -1,39 +1,27 @@
-'use strict';
-const { parseData, filterData, getPairs } = require('./src/helpers');
-const rawData = parseData('files/trades.csv');
-let filteredData = filterData(rawData);
-const pairs = getPairs(filteredData);
-const kraken = require('./src/kraken');
-const utils = require('./src/utils');
+const { getAccountInfo } = require('./src/Stellar/stellar');
+const { getAssetPairs, getTickerInfo } = require('./src/Kraken/kraken');
+const { stellarAccount } = require('./files/keys.json');
+const pair = 'XXLMZEUR';
 
-// get current data
-kraken.getCurrentData('XLMEUR');
-const currentData =  utils.readFromFile('currentData');
-
-
-let data = {};
-
-// create new empty objects for each pair in data
-pairs.forEach(p => data[p] = []);
-
-// fill those objects with data filtered by pair
-filteredData.forEach(d => {
-    if(d.pair === 'XXLMZEUR' && d.type === 'buy'){
-        const worthToday = utils.round(d.coinsBought * currentData.bid, 5);
-        d.worthToday = worthToday;
-
-        d.PL = utils.round(worthToday - d.paid, 5);
-        data[d.pair].push(d)
-    }
+getAccountInfo(stellarAccount, ({ body }) => {
+    console.dir({
+        accountId: body.account_id,
+        inflationDestination: body.inflation_destination,
+        balance: body.balances[0].balance,
+        currency: 'XLM'
+    });
 });
 
-let total = 0;
-data.XXLMZEUR.forEach(d => {
-    total += +d.PL;
+getAssetPairs((error, response) => {
+    if(error) { return console.dir(error); }
+
+    const assetPairs = Object.keys(response.body.result);
+    return console.dir(assetPairs);
 });
 
-console.table(data.XXLMZEUR);
-console.log(total);
+getTickerInfo(pair, (error, response) => {
+    if(error) { return console.dir(error); }
 
-
-
+    const prices = response.body.result[pair];
+    return console.dir(prices);
+});
