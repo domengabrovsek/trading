@@ -1,37 +1,27 @@
-'use strict';
+const { getAccountInfo } = require('./src/Stellar/stellar');
+const { getAssetPairs, getTickerInfo } = require('./src/Kraken/kraken');
+const { stellarAccount } = require('./files/keys.json');
+const pair = 'XXLMZEUR';
 
-const { parseData, getTotalFee } = require('./helpers');
-const { data, columns } = parseData('sources/trades.csv');
-// get all traded pairs
-
-const filteredData = data.map(trade => {
-    return {
-        pair: trade.pair,
-        time: trade.time,
-        type: trade.type,
-        orderType: trade.ordertype,
-        price: trade.price,
-        paid: trade.cost,
-        fee: trade.fee,
-        coinsBought: trade.vol
-    };
+getAccountInfo(stellarAccount, ({ body }) => {
+    console.dir({
+        accountId: body.account_id,
+        inflationDestination: body.inflation_destination,
+        balance: body.balances[0].balance,
+        currency: 'XLM'
+    });
 });
 
-const pairs = filteredData.map(d => d.pair);
+getAssetPairs((error, response) => {
+    if(error) { return console.dir(error); }
 
-// overall stats
-let stats = {};
+    const assetPairs = Object.keys(response.body.result);
+    return console.dir(assetPairs);
+});
 
-pairs.forEach(pair => {
-    stats[pair] = {};
-})
+getTickerInfo(pair, (error, response) => {
+    if(error) { return console.dir(error); }
 
-
-stats.totalFeePaid = getTotalFee(filteredData.map(d => d.fee));
-
-
-
-console.table(filteredData);
-
-
-console.table(stats);
+    const prices = response.body.result[pair];
+    return console.dir(prices);
+});
