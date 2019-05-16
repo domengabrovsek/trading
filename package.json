@@ -18,6 +18,8 @@
   "homepage": "https://github.com/domengabrovsek/trading#readme",
   "dependencies": {
     "csvtoarray": "^1.1.0",
+    "express": "^4.16.4",
+    "hbs": "^4.0.4",
     "request": "^2.88.0"
   }
 }
