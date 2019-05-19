@@ -1,27 +1,27 @@
-const { getAccountInfo } = require('./src/Stellar/stellar');
-const { getAssetPairs, getTickerInfo } = require('./src/Kraken/kraken');
-const { stellarAccount } = require('./files/keys.json');
-const pair = 'XXLMZEUR';
+'use strict';
 
-getAccountInfo(stellarAccount, ({ body }) => {
-    console.dir({
-        accountId: body.account_id,
-        inflationDestination: body.inflation_destination,
-        balance: body.balances[0].balance,
-        currency: 'XLM'
+const express = require('express');
+const path = require('path');
+const hbs = require('hbs');
+
+const app = express();
+
+const publicDirectory = path.join(__dirname, '../public');
+
+// tell express from where to server static content (has to be first)
+app.use(express.static(publicDirectory));
+
+// set default engine for views (hbs, handlebars.js)
+app.set('view engine', 'hbs');
+
+// route for index page
+app.get('', (req, res) => {
+    res.render('index', {
+        title: 'Home'
     });
 });
 
-getAssetPairs((error, response) => {
-    if(error) { return console.dir(error); }
-
-    const assetPairs = Object.keys(response.body.result);
-    return console.dir(assetPairs);
-});
-
-getTickerInfo(pair, (error, response) => {
-    if(error) { return console.dir(error); }
-
-    const prices = response.body.result[pair];
-    return console.dir(prices);
+// start server on port 3000
+app.listen(3000, () => {
+    console.log('Starting server on port 3000.');
 });
