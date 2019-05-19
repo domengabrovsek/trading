@@ -2,20 +2,18 @@
 
 const fs = require('fs');
 
-const writeToFile = (file, rawData) => {
-    const fullPath = `files/${file}.json`;
-    const data = JSON.stringify(rawData);
-    fs.writeFileSync(fullPath, data, err => {
-        if(err) console.log(err);
+const writeToFile = (file, data) => {
+    fs.writeFileSync(file, JSON.stringify(data), err => {
+        if(err) return console.log(err);
+
+        console.log(`Data written to ${fullPath}`);
     });
 };
 
-const readFromFile = (file) => {
-    const fullPath = `files/${file}.json`;
-    const data = JSON.parse(fs.readFileSync(fullPath).toString());
-    return data;
-};
+// read data from file and return it
+const readFromFile = file => JSON.parse(fs.readFileSync(file).toString());
 
+// round number 
 const round = (input, places) => Number.parseFloat(input).toFixed(places);
 
 module.exports = {
